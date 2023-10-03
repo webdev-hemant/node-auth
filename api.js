@@ -4,7 +4,6 @@ const { connectDb } = require("./src/config/db");
 const { APP_PORT } = require("./src/config/allEnv");
 const authRouter = require("./src/routes/authRoutes");
 const { practiceRouter } = require("./src/routes/practiceRoutes");
-const { multerUpload } = require("./test");
 
 const app = express();
 app.use(bodyparser.json());
@@ -18,8 +17,4 @@ connectDb().then((res) => {
       `server is running on port=${APP_PORT} and connected to db=${res.dbName}`
     )
   );
-  app.post("/upload", multerUpload.single("file"), (req, res) => {
-    res.send("File uploaded successfully!");
-    return;
-  });
 });

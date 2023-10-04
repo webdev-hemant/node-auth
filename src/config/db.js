@@ -4,7 +4,7 @@ const { MONGO_DB } = require("./allEnv");
 const connectDb = async () => {
   try {
     const conn = await mongoose.connect(MONGO_DB, {
-      dbName: "mobile_programming",
+      dbName: DATABASE_NAME,
     });
     const { name, host, port } = conn.connections[0];
     return {

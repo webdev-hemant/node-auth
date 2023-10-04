@@ -15,7 +15,7 @@ const signupController = async (req, res) => {
       return res.status(400).json({ message: "all fields are required." });
     }
 
-    await signupModel.create({
+    const newUser = await signupModel.create({
       firstName,
       lastName,
       dob,
@@ -24,7 +24,7 @@ const signupController = async (req, res) => {
       password,
     });
 
-    res.send({ message: "user successfully registered!" });
+    res.send({ message: "user successfully registered!", newUser });
   } catch (error) {
     res.status(500);
     handleErrors(error, req, res);

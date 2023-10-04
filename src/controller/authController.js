@@ -1,5 +1,9 @@
 const signupModel = require("../model/authModel/signupModel");
 const { handleErrors } = require("../handleErrors");
+const {
+  ACCESS_TOKEN_SECRET,
+  REFRESH_TOKEN_SECRET,
+} = require("../config/allEnv");
 
 const signupController = async (req, res) => {
   try {
@@ -46,12 +50,12 @@ const loginController = async (req, res) => {
     // create JWTs
     const accessToken = jwt.sign(
       { username: foundUser.username },
-      process.env.ACCESS_TOKEN_SECRET,
+      ACCESS_TOKEN_SECRET,
       { expiresIn: "1d" }
     );
     const refreshToken = jwt.sign(
       { username: foundUser.username },
-      process.env.REFRESH_TOKEN_SECRET,
+      REFRESH_TOKEN_SECRET,
       { expiresIn: "7d" }
     );
     // Saving refreshToken with current user

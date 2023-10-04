@@ -5,13 +5,13 @@ const {
 } = require("../config/allEnv");
 
 const generateAccessToken = (user) => {
-  return jwt.sign(user.email, ACCESS_TOKEN_SECRET, {
+  return jwt.sign({ email: user.email }, ACCESS_TOKEN_SECRET, {
     expiresIn: "1h",
   });
 };
 
 const generateRefreshToken = async (user) => {
-  const refreshToken = jwt.sign(user.email, REFRESH_TOKEN_SECRET, {
+  const refreshToken = jwt.sign({ email: user.email }, REFRESH_TOKEN_SECRET, {
     expiresIn: "7d",
   });
 

@@ -2,7 +2,7 @@ const { Schema, model } = require("mongoose");
 const { checkIfEmail } = require("../../helper/commonValidation");
 const bcrypt = require("bcrypt");
 
-const signupModel = new Schema(
+const userModel = new Schema(
   {
     firstName: {
       type: String,
@@ -34,16 +34,20 @@ const signupModel = new Schema(
       type: [String],
       default: ["basic"],
     },
+    refreshToken: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,
   }
 );
 
-signupModel.pre("save", async function (next) {
+userModel.pre("save", async function (next) {
   const salt = await bcrypt.genSalt();
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
 
-module.exports = model("signup", signupModel);
+module.exports = model("signup", userModel);

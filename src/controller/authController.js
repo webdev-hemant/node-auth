@@ -1,9 +1,14 @@
-const signupModel = require("../model/authModel/signupModel");
+const bcrypt = require("bcrypt");
+const userModel = require("../model/authModel/userModel");
 const { handleErrors } = require("../handleErrors");
 const {
   ACCESS_TOKEN_SECRET,
   REFRESH_TOKEN_SECRET,
 } = require("../config/allEnv");
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require("../helper/authHelper");
 
 const signupController = async (req, res) => {
   try {
@@ -19,7 +24,7 @@ const signupController = async (req, res) => {
       return res.status(400).json({ message: "all fields are required." });
     }
 
-    const newUser = await signupModel.create({
+    const newUser = await userModel.create({
       firstName,
       lastName,
       dob,
@@ -42,39 +47,23 @@ const loginController = async (req, res) => {
       .status(400)
       .json({ message: "Email and password are required." });
   }
-  const foundUser = usersDB.users.find(({ username }) => username === email);
+  const foundUser = await userModel.findOne({ email });
   if (!foundUser) return res.sendStatus(401); //Unauthorized
   // evaluate password
+  console.log(password, foundUser.password);
   const match = await bcrypt.compare(password, foundUser.password);
   if (match) {
     // create JWTs
-    const accessToken = jwt.sign(
-      { username: foundUser.username },
-      ACCESS_TOKEN_SECRET,
-      { expiresIn: "1d" }
-    );
-    const refreshToken = jwt.sign(
-      { username: foundUser.username },
-      REFRESH_TOKEN_SECRET,
-      { expiresIn: "7d" }
-    );
-    // Saving refreshToken with current user
-    const otherUsers = usersDB.users.filter(
-      (person) => person.username !== foundUser.username
-    );
-    const currentUser = { ...foundUser, refreshToken };
-    usersDB.setUsers([...otherUsers, currentUser]);
-    await fsPromises.writeFile(
-      path.join(__dirname, "..", "model", "users.json"),
-      JSON.stringify(usersDB.users)
-    );
-    res.cookie("jwt", refreshToken, {
+    const accessToken = generateAccessToken(foundUser);
+    const refreshToken = await generateRefreshToken(foundUser);
+
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       sameSite: "None",
       secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
-    res.json({ accessToken });
+    res.json({ accessToken, refreshToken });
   } else {
     res.sendStatus(401);
   }

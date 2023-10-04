@@ -11,6 +11,12 @@ app.use(bodyparser.json());
 app.use("/auth", authRouter);
 app.use("/practice", practiceRouter);
 
+app.get("/", (_, res) => {
+  res.json({
+    message: "its working!",
+  });
+});
+
 connectDb().then((res) => {
   app.listen(APP_PORT, () =>
     console.log(

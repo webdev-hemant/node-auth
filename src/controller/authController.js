@@ -8,6 +8,7 @@ const {
 const {
   generateAccessToken,
   generateRefreshToken,
+  hashPassword,
 } = require("../helper/authHelper");
 
 const signupController = async (req, res) => {
@@ -20,9 +21,12 @@ const signupController = async (req, res) => {
       email,
       password,
     } = req.body;
+
     if (!email || !password || !firstName || !lastName || !dob) {
       return res.status(400).json({ message: "all fields are required." });
     }
+
+    const hashedPassword = await hashPassword(password);
 
     const newUser = await userModel.create({
       firstName,
@@ -30,7 +34,7 @@ const signupController = async (req, res) => {
       dob,
       roles,
       email,
-      password,
+      password: hashedPassword,
     });
 
     res.send({ message: "user successfully registered!", newUser });

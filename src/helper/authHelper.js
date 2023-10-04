@@ -1,4 +1,6 @@
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+
 const {
   ACCESS_TOKEN_SECRET,
   REFRESH_TOKEN_SECRET,
@@ -21,4 +23,10 @@ const generateRefreshToken = async (user) => {
   return refreshToken;
 };
 
-module.exports = { generateAccessToken, generateRefreshToken };
+const hashPassword = async (password) => {
+  const salt = await bcrypt.genSalt();
+  const hashedPassword = await bcrypt.hash(password, salt);
+  return hashedPassword;
+};
+
+module.exports = { generateAccessToken, generateRefreshToken, hashPassword };

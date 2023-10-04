@@ -1,9 +1,19 @@
 const { Schema, model } = require("mongoose");
-const { checkIfEmail } = require("../../helper/validation");
+const { checkIfEmail } = require("../../helper/commonValidation");
 const bcrypt = require("bcrypt");
 
 const signupModel = new Schema(
   {
+    firstName: {
+      type: String,
+      required: [true, "first name is required!"],
+      lowercase: true,
+    },
+    lastName: {
+      type: String,
+      required: [true, "last name is required!"],
+      lowercase: true,
+    },
     email: {
       type: String,
       required: [true, "email is required!"],
@@ -15,6 +25,14 @@ const signupModel = new Schema(
       type: String,
       minLength: [6, "password should be minimum 6 charactor"],
       required: [true, "email is required!"],
+    },
+    dob: {
+      type: Date,
+      required: [true, "date of birth is required!"],
+    },
+    roles: {
+      type: [String],
+      default: ["basic"],
     },
   },
   {

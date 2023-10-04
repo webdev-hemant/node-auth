@@ -3,14 +3,27 @@ const { handleErrors } = require("../handleErrors");
 
 const signupController = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Username and password are required." });
+    const {
+      firstName,
+      lastName,
+      dob,
+      roles = ["basic"],
+      email,
+      password,
+    } = req.body;
+    if (!email || !password || !firstName || !lastName || !dob) {
+      return res.status(400).json({ message: "all fields are required." });
     }
 
-    await signupModel.create({ email, password });
+    await signupModel.create({
+      firstName,
+      lastName,
+      dob,
+      roles,
+      email,
+      password,
+    });
+
     res.send({ message: "user successfully registered!" });
   } catch (error) {
     res.status(500);
@@ -19,13 +32,47 @@ const signupController = async (req, res) => {
 };
 
 const loginController = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await signupModel.create({ email, password });
-    res.send({ message: "user successfully added!" });
-  } catch (error) {
-    res.status(500);
-    handleErrors(error, req, res);
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res
+      .status(400)
+      .json({ message: "Email and password are required." });
+  }
+  const foundUser = usersDB.users.find(({ username }) => username === email);
+  if (!foundUser) return res.sendStatus(401); //Unauthorized
+  // evaluate password
+  const match = await bcrypt.compare(password, foundUser.password);
+  if (match) {
+    // create JWTs
+    const accessToken = jwt.sign(
+      { username: foundUser.username },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "1d" }
+    );
+    const refreshToken = jwt.sign(
+      { username: foundUser.username },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: "7d" }
+    );
+    // Saving refreshToken with current user
+    const otherUsers = usersDB.users.filter(
+      (person) => person.username !== foundUser.username
+    );
+    const currentUser = { ...foundUser, refreshToken };
+    usersDB.setUsers([...otherUsers, currentUser]);
+    await fsPromises.writeFile(
+      path.join(__dirname, "..", "model", "users.json"),
+      JSON.stringify(usersDB.users)
+    );
+    res.cookie("jwt", refreshToken, {
+      httpOnly: true,
+      sameSite: "None",
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    res.json({ accessToken });
+  } else {
+    res.sendStatus(401);
   }
 };
 

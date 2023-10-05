@@ -85,7 +85,6 @@ const refreshTokenController = async (req, res) => {
 
     // Find the user in the database based on the username in the refresh token
     const dbUser = await userModel.findOne({ email: user.email });
-    console.log(dbUser.refreshToken);
 
     if (!dbUser) {
       return res.status(403).send("User not found.");

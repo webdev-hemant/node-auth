@@ -3,7 +3,6 @@ const { errorCodeConstants } = require("../constants/errCodes");
 
 const handleErrors = (err, req, res, next) => {
   const statusCode = res.statusCode || 500;
-  console.log(err, statusCode);
   const errObject = {
     err: "",
     // message: err.message,

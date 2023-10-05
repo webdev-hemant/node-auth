@@ -7,7 +7,7 @@ const ENVIRONMENT = process.env.ENVIRONMENT;
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
-module.exports = {
+const allEnv = {
   APP_PORT,
   MONGO_DB,
   DATABASE_NAME,
@@ -15,3 +15,5 @@ module.exports = {
   ACCESS_TOKEN_SECRET,
   REFRESH_TOKEN_SECRET,
 };
+
+module.exports = allEnv;

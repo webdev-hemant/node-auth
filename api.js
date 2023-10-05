@@ -4,7 +4,6 @@ const cors = require("cors");
 const { connectDb } = require("./src/config/db");
 const { APP_PORT } = require("./src/config/allEnv");
 const authRouter = require("./src/routes/authRoutes");
-const { practiceRouter } = require("./src/routes/practiceRoutes");
 const corsOptions = require("./src/config/corsOptions");
 const credentials = require("./src/middlewares/credentials");
 
@@ -14,7 +13,6 @@ app.use(credentials);
 app.use(bodyparser.json());
 
 app.use("/auth", authRouter);
-app.use("/practice", practiceRouter);
 
 app.get("/", (_, res) => {
   res.json({

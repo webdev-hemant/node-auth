@@ -1,11 +1,16 @@
 const express = require("express");
 const bodyparser = require("body-parser");
+const cors = require("cors");
 const { connectDb } = require("./src/config/db");
 const { APP_PORT } = require("./src/config/allEnv");
 const authRouter = require("./src/routes/authRoutes");
 const { practiceRouter } = require("./src/routes/practiceRoutes");
+const corsOptions = require("./src/config/corsOptions");
+const credentials = require("./src/middlewares/credentials");
 
 const app = express();
+app.use(cors(corsOptions));
+app.use(credentials);
 app.use(bodyparser.json());
 
 app.use("/auth", authRouter);

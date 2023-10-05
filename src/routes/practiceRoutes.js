@@ -3,8 +3,11 @@ const {
   addToDatabase,
   tryAllQueries,
 } = require("../controller/practiceController");
+const { authorizeRoles } = require("../middlewares/authorizeRoles");
 
 const practiceRouter = require("express").Router();
+
+practiceRouter.use(authorizeRoles("basic"));
 
 practiceRouter
   .route("/")
